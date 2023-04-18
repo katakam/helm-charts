@@ -1,0 +1,26 @@
+name: datree
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+jobs:
+  datree:
+    name: Validate Helm charts 🔒
+    runs-on: ubuntu-latest
+    container:
+      image: dtzar/helm-kubectl:3.6.3
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install Datree 🔨
+        run: |
+          helm plugin install https://github.com/datreeio/helm-datree
+      - name: Datree test 🔥
+        env:
+          DATREE_TOKEN: ${{ secrets.DATREE_TOKEN }}
+        run: |
+          helm datree test ./charts/tooling --ignore-missing-schemas
