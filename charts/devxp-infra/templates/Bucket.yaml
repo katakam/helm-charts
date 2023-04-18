@@ -1,0 +1,17 @@
+{{- if .Values.bucket.enabled }}
+---
+apiVersion: s3.aws.crossplane.io/v1beta1
+kind: Bucket
+metadata:
+  name: devxp-{{ .Values.name }}
+  namespace: {{ include "namespace" . }}
+  labels:
+    backstage.io/kubernetes-id: {{ .Values.name }}
+spec:
+  forProvider:
+    acl: {{ .Values.Bucket.acl }}
+    locationConstraint: {{ .Values.Bucket.locationConstraint }}
+    objectLockEnabledForBucket: {{ .Values.Bucket.objectLockEnabledForBucket }}
+  providerConfigRef:
+    name: {{ .Values.providerConfigRef }}
+{{- end }}

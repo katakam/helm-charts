@@ -1,0 +1,19 @@
+{{- if .Values.namespace.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "namespace" . }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Values.name }}
+    meta.helm.sh/release-namespace: {{ .Values.name }}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    backstage.io/kubernetes-id: {{ .Values.name }}
+    kubernetes.io/metadata.name: {{ .Values.name }}
+    {{- if .Values.istioInjection.enabled }}
+    istio-injection: enabled
+    {{- end }}
+spec:
+  finalizers:
+  - kubernetes
+{{- end }}

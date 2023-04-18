@@ -1,0 +1,110 @@
+# Default values for cluster-bootstrap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  application:
+    cluster:
+      name: "in-cluster"
+      server: "https://kubernetes.default.svc"
+      domain: ".diegoluisi.eti.br"
+    project: default
+
+sealedSecrets:
+  enabled: true
+  namespace: kube-system
+
+istioBase:
+  enabled: true
+  namespace: istio-system
+
+istiod:
+  enabled: true
+  namespace: istio-system
+
+istioGateway:
+  namespace: istio-ingress
+  public:
+    enabled: true
+    # -- this prop is used to inject values to gateway in public chart
+    values: {}
+    gateway:
+      servers: []
+      # - port:
+      #     number: 443
+      #     name: https
+      #     protocol: HTTPS
+      #   tls:
+      #     mode: SIMPLE
+      #     credentialName: istio-certs
+      #   hosts:
+      #     - "*.diegoluisi.eti.br"
+  private:
+    enabled: true
+    values:
+      service:
+        annotations:
+          alb.ingress.kubernetes.io/scheme: internal
+    gateway:
+      servers:
+      - port:
+          number: 443
+          name: https
+          protocol: HTTPS
+        tls:
+          mode: SIMPLE
+          credentialName: istio-certs
+        hosts:
+          - "*.diegoluisi.local"
+
+certManager:
+  enabled: true
+  namespace: cert-manager
+
+loki:
+  enabled: false
+  namespace: monitoring
+  values:
+    fullnameOverride: loki
+    global:
+      dnsService: coredns
+      clusterDomain: lgsk8sp1.grupologos.local
+
+kiali:
+  enabled: true
+  namespace: kiali-operator
+  values:
+    includeCRDs: true
+    releaseName: kiali-operator
+    cr:
+      create: true
+      namespace: kiali-operator
+
+kubeStateMetrics:
+  enabled: true
+  namespace: kube-system
+  values:
+    fullnameOverride: kube-state-metrics
+
+metricsServer:
+  enabled: true
+  namespace: kube-system
+  values:
+    fullnameOverride: metrics-server
+    extraArgs:
+      - --kubelet-insecure-tls=true
+      - --kubelet-preferred-address-types=InternalIP
+
+promtail:
+  enabled: true
+  namespace: monitoring
+  values:
+    fullnameOverride: promtail
+
+prometheus:
+  enabled: true
+  namespace: monitoring
+
+alertmanager:
+  enabled: true
+  namespace: monitoring
